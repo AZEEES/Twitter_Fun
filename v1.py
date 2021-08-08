@@ -1,8 +1,8 @@
 import json
 import tweepy
-import cred
 import openai
 import logging
+import cred
 
 CONSUMER_KEY = cred.consumer_key
 CONSUMER_SECRET = cred.consumer_secret
@@ -13,6 +13,8 @@ OPENAI_API_KEY = cred.openai_api_key
 
 openai.api_key = OPENAI_API_KEY
 logging.basicConfig(filename='debug.log', level=logging.DEBUG)
+f = open('logs.log', 'a')
+f.close()
 
 def generate_response(tweeted_text):
     response = openai.Completion.create(
@@ -30,7 +32,8 @@ def generate_response(tweeted_text):
 
 
 
-follow_usernames = ["@abouzuhayr", '@kunalb11', '@elonmusk']
+follow_usernames = ["@abouzuhayr", '@kunalb11', '@elonmusk', '@naval', '@ShaneAParrish', '@TheTweetOfGod']
+# follow_usernames = ["@abouzuhayr"]
 follow_ids = []
 
 class MyStreamListener(tweepy.StreamListener):
@@ -42,7 +45,10 @@ class MyStreamListener(tweepy.StreamListener):
         user_name = tweet.user.name
         tweeted_text = tweet.text
         if(str(tweet.user.id) in follow_ids):
+            f = open('logs.log', 'a')
             tweet_str = user_name + " : " + tweeted_text
+            f.write("\n" + tweet_str)
+            f.close()
             print(tweet_str)
             logging.info(tweet_str)
             try:
@@ -50,6 +56,10 @@ class MyStreamListener(tweepy.StreamListener):
                 response_str = "BOT : " + respond_with_tweet
                 logging.info(response_str)
                 print(response_str)
+                f = open('logs.log', 'a')
+                f.write("\n" + response_str)
+                f.write("\n\n")
+                f.close()
                 api.update_status(
                         status='@' + tweet.user.screen_name + respond_with_tweet,
                         in_reply_to_status_id=tweet.id,
